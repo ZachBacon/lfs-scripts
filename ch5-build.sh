@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190221 v1.0
-# Builds chapters 5.4 - Binutils to 5.34 - Xz
+# PiLFS Build Script SVN-20181212-aarch64 v1.0
+# Builds chapters 5.4 - Binutils to 5.33 - Xz
 # http://www.intestinate.com/pilfs
 #
 # Optional parameteres below:
@@ -25,8 +25,8 @@ function prebuild_sanity_check {
         exit 1
     fi
 
-    if ! [[ -v LFS_TGT ]] || [[ $LFS_TGT != "armv6l-lfs-linux-gnueabihf" && $LFS_TGT != "armv7l-lfs-linux-gnueabihf" ]] ; then
-        echo "Your LFS_TGT variable should be set to armv6l-lfs-linux-gnueabihf for RPi1 or armv7l-lfs-linux-gnueabihf for RPi2 and RPi3"
+    if ! [[ -v LFS_TGT ]] || [[ $LFS_TGT != "aarch64-lfs-linux-gnu" ]] ; then
+        echo "Your LFS_TGT variable should be set to aarch64-lfs-linux-gnu"
         exit 1
     fi
 
@@ -58,38 +58,35 @@ function prebuild_sanity_check {
 
 function check_tarballs {
 LIST_OF_TARBALLS="
-binutils-2.32.tar.xz
+binutils-2.31.1.tar.xz
 gcc-8.2.0.tar.xz
-gcc-5.3.0-rpi1-cpu-default.patch
-gcc-5.3.0-rpi2-cpu-default.patch
-gcc-5.3.0-rpi3-cpu-default.patch
-mpfr-4.0.2.tar.xz
+mpfr-4.0.1.tar.xz
 gmp-6.1.2.tar.xz
 mpc-1.1.0.tar.gz
-rpi-4.19.y.tar.gz
-glibc-2.29.tar.xz
+rpi-4.14.y.tar.gz
+glibc-2.28.tar.xz
 tcl8.6.9-src.tar.gz
 expect5.45.4.tar.gz
+expect5.45-aarch64-fix.patch
 dejagnu-1.6.2.tar.gz
 ncurses-6.1.tar.gz
-bash-5.0.tar.gz
-bison-3.3.2.tar.xz
+bash-4.4.18.tar.gz
+bison-3.2.2.tar.xz
 bzip2-1.0.6.tar.gz
 coreutils-8.30.tar.xz
-diffutils-3.7.tar.xz
+diffutils-3.6.tar.xz
 file-5.35.tar.gz
 findutils-4.6.0.tar.gz
 gawk-4.2.1.tar.xz
 gettext-0.19.8.1.tar.xz
-grep-3.3.tar.xz
-gzip-1.10.tar.xz
+grep-3.1.tar.xz
+gzip-1.9.tar.xz
 m4-1.4.18.tar.xz
 make-4.2.1.tar.bz2
 patch-2.7.6.tar.xz
 perl-5.28.1.tar.xz
-Python-3.7.2.tar.xz
-sed-4.7.tar.xz
-tar-1.31.tar.xz
+sed-4.5.tar.xz
+tar-1.30.tar.xz
 texinfo-6.5.tar.xz
 xz-5.2.4.tar.xz
 "
@@ -154,10 +151,10 @@ done
 total_time=$(timer)
 sbu_time=$(timer)
 
-echo "# 5.4. Binutils-2.32 - Pass 1"
+echo "# 5.4. Binutils-2.31.1 - Pass 1"
 cd $LFS/sources
-tar -Jxf binutils-2.32.tar.xz
-cd binutils-2.32
+tar -Jxf binutils-2.31.1.tar.xz
+cd binutils-2.31.1
 mkdir -v build
 cd build
 ../configure --prefix=/tools            \
@@ -169,7 +166,7 @@ cd build
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf binutils-2.32
+rm -rf binutils-2.31.1
 
 echo -e "\n=========================="
 printf 'Your SBU time is: %s\n' $(timer $sbu_time)
@@ -178,21 +175,14 @@ echo -e "==========================\n"
 echo "# 5.5. gcc-8.2.0 - Pass 1"
 tar -Jxf gcc-8.2.0.tar.xz
 cd gcc-8.2.0
-case $(uname -m) in
-  armv6l) patch -Np1 -i ../gcc-5.3.0-rpi1-cpu-default.patch ;;
-  armv7l) case $(sed -n '/^Revision/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo) in
-    a02082|a22082|a32082|a52082|a020d3|9020e0) patch -Np1 -i ../gcc-5.3.0-rpi3-cpu-default.patch ;;
-    *) patch -Np1 -i ../gcc-5.3.0-rpi2-cpu-default.patch ;;
-    esac
-  ;;
-esac
-tar -Jxf ../mpfr-4.0.2.tar.xz
-mv -v mpfr-4.0.2 mpfr
+tar -Jxf ../mpfr-4.0.1.tar.xz
+mv -v mpfr-4.0.1 mpfr
 tar -Jxf ../gmp-6.1.2.tar.xz
 mv -v gmp-6.1.2 gmp
 tar -zxf ../mpc-1.1.0.tar.gz
 mv -v mpc-1.1.0 mpc
-for file in gcc/config/arm/linux-eabi.h
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h -o -name linux-eabi.h -o -name linux-elf.h -o -name aarch64-linux.h)
 do
   cp -uv $file{,.orig}
   sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' \
@@ -204,6 +194,7 @@ do
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
+sed -e '/mabi.lp64=/s/lib64/lib/' -i.orig gcc/config/aarch64/t-aarch64-linux
 mkdir -v build
 cd build
 ../configure                                       \
@@ -234,16 +225,16 @@ cd $LFS/sources
 rm -rf gcc-8.2.0
 
 echo "# 5.6. Raspberry Pi Linux API Headers"
-tar -zxf rpi-4.19.y.tar.gz
-cd linux-rpi-4.19.y
+tar -zxf rpi-4.14.y.tar.gz
+cd linux-rpi-4.14.y
 make mrproper
 make INSTALL_HDR_PATH=dest headers_install
 cp -rv dest/include/* /tools/include
 cd $LFS/sources
 
-echo "# 5.7. Glibc-2.29"
-tar -Jxf glibc-2.29.tar.xz
-cd glibc-2.29
+echo "# 5.7. Glibc-2.28"
+tar -Jxf glibc-2.28.tar.xz
+cd glibc-2.28
 mkdir -v build
 cd build
 ../configure                             \
@@ -251,13 +242,15 @@ cd build
       --host=$LFS_TGT                    \
       --build=$(../scripts/config.guess) \
       --enable-kernel=3.2                \
-      --with-headers=/tools/include
+      --with-headers=/tools/include      \
+      libc_cv_forced_unwind=yes          \
+      libc_cv_c_cleanup=yes
 make -j $PARALLEL_JOBS
 make install
 # Compatibility symlink for non ld-linux-armhf awareness
-ln -sv ld-2.29.so $LFS/tools/lib/ld-linux.so.3
+ln -sv ld-2.28.so $LFS/tools/lib/ld-linux.so.3
 cd $LFS/sources
-rm -rf glibc-2.29
+rm -rf glibc-2.28
 
 echo "# 5.8. Libstdc++ from GCC-8.2.0"
 tar -Jxf gcc-8.2.0.tar.xz
@@ -277,9 +270,9 @@ make install
 cd $LFS/sources
 rm -rf gcc-8.2.0
 
-echo "# 5.9. Binutils-2.32 - Pass 2"
-tar -Jxf binutils-2.32.tar.xz
-cd binutils-2.32
+echo "# 5.9. Binutils-2.31.1 - Pass 2"
+tar -Jxf binutils-2.31.1.tar.xz
+cd binutils-2.31.1
 mkdir -v build
 cd build
 CC=$LFS_TGT-gcc                \
@@ -297,22 +290,15 @@ make -C ld clean
 make -C ld LIB_PATH=/usr/lib:/lib
 cp -v ld/ld-new /tools/bin
 cd $LFS/sources
-rm -rf binutils-2.32
+rm -rf binutils-2.31.1
 
 echo "# 5.10. gcc-8.2.0 - Pass 2"
 tar -Jxf gcc-8.2.0.tar.xz
 cd gcc-8.2.0
-case $(uname -m) in
-  armv6l) patch -Np1 -i ../gcc-5.3.0-rpi1-cpu-default.patch ;;
-  armv7l) case $(sed -n '/^Revision/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo) in
-    a02082|a22082|a32082|a52082|a020d3|9020e0) patch -Np1 -i ../gcc-5.3.0-rpi3-cpu-default.patch ;;
-    *) patch -Np1 -i ../gcc-5.3.0-rpi2-cpu-default.patch ;;
-    esac
-  ;;
-esac
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
-for file in gcc/config/arm/linux-eabi.h
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h -o -name linux-eabi.h -o -name linux-elf.h -o -name aarch64-linux.h)
 do
   cp -uv $file{,.orig}
   sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' \
@@ -324,8 +310,9 @@ do
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
-tar -Jxf ../mpfr-4.0.2.tar.xz
-mv -v mpfr-4.0.2 mpfr
+sed -e '/mabi.lp64=/s/lib64/lib/' -i.orig gcc/config/aarch64/t-aarch64-linux
+tar -Jxf ../mpfr-4.0.1.tar.xz
+mv -v mpfr-4.0.1 mpfr
 tar -Jxf ../gmp-6.1.2.tar.xz
 mv -v gmp-6.1.2 gmp
 tar -zxf ../mpc-1.1.0.tar.gz
@@ -367,6 +354,7 @@ rm -rf tcl8.6.9
 echo "# 5.12. Expect-5.45.4"
 tar -zxf expect5.45.4.tar.gz
 cd expect5.45.4
+patch -Np1 -i ../expect5.45-aarch64-fix.patch
 cp -v configure{,.orig}
 sed 's:/usr/local/bin:/bin:' configure.orig > configure
 ./configure --prefix=/tools       \
@@ -408,28 +396,27 @@ sed -i s/mawk// configure
             --enable-overwrite
 make -j $PARALLEL_JOBS
 make install
-ln -s libncursesw.so /tools/lib/libncurses.so
 cd $LFS/sources
 rm -rf ncurses-6.1
 
-echo "# 5.16. Bash-5.0"
-tar -zxf bash-5.0.tar.gz
-cd bash-5.0
+echo "# 5.16. Bash-4.4.18"
+tar -zxf bash-4.4.18.tar.gz
+cd bash-4.4.18
 ./configure --prefix=/tools --without-bash-malloc
 make -j $PARALLEL_JOBS
 make install
 ln -sv bash /tools/bin/sh
 cd $LFS/sources
-rm -rf bash-5.0
+rm -rf bash-4.4.18
 
-echo "# 5.17. Bison-3.3.2"
-tar -Jxf bison-3.3.2.tar.xz
-cd bison-3.3.2
+echo "# 5.17. Bison-3.2.2"
+tar -Jxf bison-3.2.2.tar.xz
+cd bison-3.2.2
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf bison-3.3.2
+rm -rf bison-3.2.2
 
 echo "# 5.18. Bzip2-1.0.6"
 tar -zxf bzip2-1.0.6.tar.gz
@@ -448,14 +435,14 @@ make install
 cd $LFS/sources
 rm -rf coreutils-8.30
 
-echo "# 5.20. Diffutils-3.7"
-tar -Jxf diffutils-3.7.tar.xz
-cd diffutils-3.7
+echo "# 5.20. Diffutils-3.6"
+tar -Jxf diffutils-3.6.tar.xz
+cd diffutils-3.6
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf diffutils-3.7
+rm -rf diffutils-3.6
 
 echo "# 5.21. File-5.35"
 tar -zxf file-5.35.tar.gz
@@ -501,23 +488,25 @@ cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin
 cd $LFS/sources
 rm -rf gettext-0.19.8.1
 
-echo "# 5.25. Grep-3.3"
-tar -Jxf grep-3.3.tar.xz
-cd grep-3.3
+echo "# 5.25. Grep-3.1"
+tar -Jxf grep-3.1.tar.xz
+cd grep-3.1
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf grep-3.3
+rm -rf grep-3.1
 
-echo "# 5.26. Gzip-1.10"
-tar -Jxf gzip-1.10.tar.xz
-cd gzip-1.10
+echo "# 5.26. Gzip-1.9"
+tar -Jxf gzip-1.9.tar.xz
+cd gzip-1.9
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf gzip-1.10
+rm -rf gzip-1.9
 
 echo "# 5.27. Make-4.2.1"
 tar -jxf make-4.2.1.tar.bz2
@@ -549,35 +538,25 @@ cp -Rv lib/* /tools/lib/perl5/5.28.1
 cd $LFS/sources
 rm -rf perl-5.28.1
 
-echo "# 5.30. Python-3.7.2"
-tar -Jxf Python-3.7.2.tar.xz
-cd Python-3.7.2
-sed -i '/def add_multiarch_paths/a \        return' setup.py
-./configure --prefix=/tools --without-ensurepip
-make -j $PARALLEL_JOBS
-make install
-cd $LFS/sources
-rm -rf Python-3.7.2
-
-echo "# 5.31. Sed-4.7"
-tar -Jxf sed-4.7.tar.xz
-cd sed-4.7
+echo "# 5.30. Sed-4.5"
+tar -Jxf sed-4.5.tar.xz
+cd sed-4.5
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf sed-4.7
+rm -rf sed-4.5
 
-echo "# 5.32. Tar-1.31"
-tar -Jxf tar-1.31.tar.xz
-cd tar-1.31
+echo "# 5.31. Tar-1.30"
+tar -Jxf tar-1.30.tar.xz
+cd tar-1.30
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf tar-1.31
+rm -rf tar-1.30
 
-echo "# 5.33. Texinfo-6.5"
+echo "# 5.32. Texinfo-6.5"
 tar -Jxf texinfo-6.5.tar.xz
 cd texinfo-6.5
 ./configure --prefix=/tools
@@ -586,7 +565,7 @@ make install
 cd $LFS/sources
 rm -rf texinfo-6.5
 
-echo "# 5.34. Xz-5.2.4"
+echo "# 5.33. Xz-5.2.4"
 tar -Jxf xz-5.2.4.tar.xz
 cd xz-5.2.4
 ./configure --prefix=/tools
@@ -600,4 +579,4 @@ do_strip
 echo -e "----------------------------------------------------"
 echo -e "\nYou made it! This is the end of chapter 5!"
 printf 'Total script time: %s\n' $(timer $total_time)
-echo -e "Now continue reading from \"5.36. Changing Ownership\""
+echo -e "Now continue reading from \"5.35. Changing Ownership\""
