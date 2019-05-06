@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190221 v1.0
+# PiLFS Build Script SVN-20190503 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
 # http://www.intestinate.com/pilfs
 #
@@ -59,7 +59,7 @@ function prebuild_sanity_check {
 function check_tarballs {
 LIST_OF_TARBALLS="
 binutils-2.32.tar.xz
-gcc-8.2.0.tar.xz
+gcc-9.1.0.tar.xz
 gcc-5.3.0-rpi1-cpu-default.patch
 gcc-5.3.0-rpi2-cpu-default.patch
 gcc-5.3.0-rpi3-cpu-default.patch
@@ -75,22 +75,22 @@ ncurses-6.1.tar.gz
 bash-5.0.tar.gz
 bison-3.3.2.tar.xz
 bzip2-1.0.6.tar.gz
-coreutils-8.30.tar.xz
+coreutils-8.31.tar.xz
 diffutils-3.7.tar.xz
-file-5.35.tar.gz
+file-5.36.tar.gz
 findutils-4.6.0.tar.gz
-gawk-4.2.1.tar.xz
+gawk-5.0.0.tar.xz
 gettext-0.19.8.1.tar.xz
 grep-3.3.tar.xz
 gzip-1.10.tar.xz
 m4-1.4.18.tar.xz
 make-4.2.1.tar.bz2
 patch-2.7.6.tar.xz
-perl-5.28.1.tar.xz
-Python-3.7.2.tar.xz
+perl-5.28.2.tar.xz
+Python-3.7.3.tar.xz
 sed-4.7.tar.xz
-tar-1.31.tar.xz
-texinfo-6.5.tar.xz
+tar-1.32.tar.xz
+texinfo-6.6.tar.xz
 xz-5.2.4.tar.xz
 "
 
@@ -175,9 +175,9 @@ echo -e "\n=========================="
 printf 'Your SBU time is: %s\n' $(timer $sbu_time)
 echo -e "==========================\n"
 
-echo "# 5.5. gcc-8.2.0 - Pass 1"
-tar -Jxf gcc-8.2.0.tar.xz
-cd gcc-8.2.0
+echo "# 5.5. gcc-9.1.0 - Pass 1"
+tar -Jxf gcc-9.1.0.tar.xz
+cd gcc-9.1.0
 case $(uname -m) in
   armv6l) patch -Np1 -i ../gcc-5.3.0-rpi1-cpu-default.patch ;;
   armv7l) case $(sed -n '/^Revision/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo) in
@@ -231,7 +231,7 @@ cd build
 make
 make install
 cd $LFS/sources
-rm -rf gcc-8.2.0
+rm -rf gcc-9.1.0
 
 echo "# 5.6. Raspberry Pi Linux API Headers"
 tar -zxf rpi-4.19.y.tar.gz
@@ -259,9 +259,9 @@ ln -sv ld-2.29.so $LFS/tools/lib/ld-linux.so.3
 cd $LFS/sources
 rm -rf glibc-2.29
 
-echo "# 5.8. Libstdc++ from GCC-8.2.0"
-tar -Jxf gcc-8.2.0.tar.xz
-cd gcc-8.2.0
+echo "# 5.8. Libstdc++ from GCC-9.1.0"
+tar -Jxf gcc-9.1.0.tar.xz
+cd gcc-9.1.0
 mkdir -v build
 cd build
 ../libstdc++-v3/configure           \
@@ -271,11 +271,11 @@ cd build
     --disable-nls                   \
     --disable-libstdcxx-threads     \
     --disable-libstdcxx-pch         \
-    --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/8.2.0
+    --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/9.1.0
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf gcc-8.2.0
+rm -rf gcc-9.1.0
 
 echo "# 5.9. Binutils-2.32 - Pass 2"
 tar -Jxf binutils-2.32.tar.xz
@@ -299,9 +299,9 @@ cp -v ld/ld-new /tools/bin
 cd $LFS/sources
 rm -rf binutils-2.32
 
-echo "# 5.10. gcc-8.2.0 - Pass 2"
-tar -Jxf gcc-8.2.0.tar.xz
-cd gcc-8.2.0
+echo "# 5.10. gcc-9.1.0 - Pass 2"
+tar -Jxf gcc-9.1.0.tar.xz
+cd gcc-9.1.0
 case $(uname -m) in
   armv6l) patch -Np1 -i ../gcc-5.3.0-rpi1-cpu-default.patch ;;
   armv7l) case $(sed -n '/^Revision/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo) in
@@ -349,9 +349,9 @@ make
 make install
 ln -sv gcc /tools/bin/cc
 cd $LFS/sources
-rm -rf gcc-8.2.0
+rm -rf gcc-9.1.0
 
-echo "# 5.11. Tcl-core-8.6.9"
+echo "# 5.11. Tcl-8.6.9"
 tar -zxf tcl8.6.9-src.tar.gz
 cd tcl8.6.9
 cd unix
@@ -439,14 +439,14 @@ make PREFIX=/tools install
 cd $LFS/sources
 rm -rf bzip2-1.0.6
 
-echo "# 5.19. Coreutils-8.30"
-tar -Jxf coreutils-8.30.tar.xz
-cd coreutils-8.30
+echo "# 5.19. Coreutils-8.31"
+tar -Jxf coreutils-8.31.tar.xz
+cd coreutils-8.31
 ./configure --prefix=/tools --enable-install-program=hostname
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf coreutils-8.30
+rm -rf coreutils-8.31
 
 echo "# 5.20. Diffutils-3.7"
 tar -Jxf diffutils-3.7.tar.xz
@@ -457,14 +457,14 @@ make install
 cd $LFS/sources
 rm -rf diffutils-3.7
 
-echo "# 5.21. File-5.35"
-tar -zxf file-5.35.tar.gz
-cd file-5.35
+echo "# 5.21. File-5.36"
+tar -zxf file-5.36.tar.gz
+cd file-5.36
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf file-5.35
+rm -rf file-5.36
 
 echo "# 5.22. Findutils-4.6.0"
 tar -zxf findutils-4.6.0.tar.gz
@@ -478,14 +478,14 @@ make install
 cd $LFS/sources
 rm -rf findutils-4.6.0
 
-echo "# 5.23. Gawk-4.2.1"
-tar -Jxf gawk-4.2.1.tar.xz
-cd gawk-4.2.1
+echo "# 5.23. Gawk-5.0.0"
+tar -Jxf gawk-5.0.0.tar.xz
+cd gawk-5.0.0
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf gawk-4.2.1
+rm -rf gawk-5.0.0
 
 echo "# 5.24. Gettext-0.19.8.1"
 tar -Jxf gettext-0.19.8.1.tar.xz
@@ -538,26 +538,26 @@ make install
 cd $LFS/sources
 rm -rf patch-2.7.6
 
-echo "# 5.29. Perl-5.28.1"
-tar -Jxf perl-5.28.1.tar.xz
-cd perl-5.28.1
+echo "# 5.29. Perl-5.28.2"
+tar -Jxf perl-5.28.2.tar.xz
+cd perl-5.28.2
 sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
 make -j $PARALLEL_JOBS
 cp -v perl cpan/podlators/scripts/pod2man /tools/bin
-mkdir -pv /tools/lib/perl5/5.28.1
-cp -Rv lib/* /tools/lib/perl5/5.28.1
+mkdir -pv /tools/lib/perl5/5.28.2
+cp -Rv lib/* /tools/lib/perl5/5.28.2
 cd $LFS/sources
-rm -rf perl-5.28.1
+rm -rf perl-5.28.2
 
-echo "# 5.30. Python-3.7.2"
-tar -Jxf Python-3.7.2.tar.xz
-cd Python-3.7.2
+echo "# 5.30. Python-3.7.3"
+tar -Jxf Python-3.7.3.tar.xz
+cd Python-3.7.3
 sed -i '/def add_multiarch_paths/a \        return' setup.py
 ./configure --prefix=/tools --without-ensurepip
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf Python-3.7.2
+rm -rf Python-3.7.3
 
 echo "# 5.31. Sed-4.7"
 tar -Jxf sed-4.7.tar.xz
@@ -568,23 +568,23 @@ make install
 cd $LFS/sources
 rm -rf sed-4.7
 
-echo "# 5.32. Tar-1.31"
-tar -Jxf tar-1.31.tar.xz
-cd tar-1.31
+echo "# 5.32. Tar-1.32"
+tar -Jxf tar-1.32.tar.xz
+cd tar-1.32
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf tar-1.31
+rm -rf tar-1.32
 
-echo "# 5.33. Texinfo-6.5"
-tar -Jxf texinfo-6.5.tar.xz
-cd texinfo-6.5
+echo "# 5.33. Texinfo-6.6"
+tar -Jxf texinfo-6.6.tar.xz
+cd texinfo-6.6
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf texinfo-6.5
+rm -rf texinfo-6.6
 
 echo "# 5.34. Xz-5.2.4"
 tar -Jxf xz-5.2.4.tar.xz
