@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190714 v1.0
+# PiLFS Build Script SVN-20190803 v1.0
 # Builds chapters 6.7 - Raspberry Pi Linux API Headers to 6.77 - Eudev
 # https://intestinate.com/pilfs
 #
@@ -39,15 +39,15 @@ function prebuild_sanity_check {
 function check_tarballs {
 LIST_OF_TARBALLS="
 rpi-4.19.y.tar.gz
-man-pages-5.01.tar.xz
-glibc-2.29.tar.xz
-glibc-2.29-fhs-1.patch
+man-pages-5.02.tar.xz
+glibc-2.30.tar.xz
+glibc-2.30-fhs-1.patch
 tzdata2019b.tar.gz
 zlib-1.2.11.tar.xz
 file-5.37.tar.gz
 readline-8.0.tar.gz
 m4-1.4.18.tar.xz
-bc-2.1.0.tar.xz
+bc-2.1.1.tar.gz
 binutils-2.32.tar.xz
 gmp-6.1.2.tar.xz
 mpfr-4.0.2.tar.xz
@@ -93,7 +93,7 @@ python-3.7.4-docs-html.tar.bz2
 ninja-1.9.0.tar.gz
 meson-0.51.1.tar.gz
 procps-ng-3.3.15.tar.xz
-e2fsprogs-1.45.2.tar.gz
+e2fsprogs-1.45.3.tar.gz
 coreutils-8.31.tar.xz
 coreutils-8.31-i18n-1.patch
 check-0.12.0.tar.gz
@@ -104,8 +104,8 @@ groff-1.22.4.tar.gz
 less-551.tar.gz
 gzip-1.10.tar.xz
 iproute2-5.2.0.tar.xz
-kbd-2.0.4.tar.xz
-kbd-2.0.4-backspace-1.patch
+kbd-2.2.0.tar.xz
+kbd-2.2.0-backspace-1.patch
 libpipeline-1.5.1.tar.gz
 make-4.2.1.tar.gz
 patch-2.7.6.tar.xz
@@ -183,17 +183,17 @@ find dest/include \( -name .install -o -name ..install.cmd \) -delete
 cp -rv dest/include/* /usr/include
 cd /sources
 
-echo "# 6.8. Man-pages-5.01"
-tar -Jxf man-pages-5.01.tar.xz
-cd man-pages-5.01
+echo "# 6.8. Man-pages-5.02"
+tar -Jxf man-pages-5.02.tar.xz
+cd man-pages-5.02
 make install
 cd /sources
-rm -rf man-pages-5.01
+rm -rf man-pages-5.02
 
-echo "# 6.9. Glibc-2.29"
-tar -Jxf glibc-2.29.tar.xz
-cd glibc-2.29
-patch -Np1 -i ../glibc-2.29-fhs-1.patch
+echo "# 6.9. Glibc-2.30"
+tar -Jxf glibc-2.30.tar.xz
+cd glibc-2.30
+patch -Np1 -i ../glibc-2.30-fhs-1.patch
 mkdir -v build
 cd build
 CC="gcc -ffile-prefix-map=/tools=/usr" \
@@ -263,9 +263,9 @@ include /etc/ld.so.conf.d/*.conf
 EOF
 mkdir -pv /etc/ld.so.conf.d
 # Compatibility symlink for non ld-linux-armhf awareness
-ln -sv ld-2.29.so /lib/ld-linux.so.3
+ln -sv ld-2.30.so /lib/ld-linux.so.3
 cd /sources
-rm -rf glibc-2.29
+rm -rf glibc-2.30
 
 echo "# 6.10. Adjusting the Toolchain"
 mv -v /tools/bin/{ld,ld-old}
@@ -328,14 +328,14 @@ make install
 cd /sources
 rm -rf m4-1.4.18
 
-echo "# 6.15. Bc-2.1.0"
-tar -Jxf bc-2.1.0.tar.xz
-cd bc-2.1.0
+echo "# 6.15. Bc-2.1.1"
+tar -zxf bc-2.1.1.tar.gz
+cd bc-2.1.1
 PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
 make -j $PARALLEL_JOBS
 make install
 cd /sources
-rm -rf bc-2.1.0
+rm -rf bc-2.1.1
 
 echo "# 6.16. Binutils-2.32"
 tar -Jxf binutils-2.32.tar.xz
@@ -1017,21 +1017,21 @@ make DOCDIR=/usr/share/doc/iproute2-5.2.0 install
 cd /sources
 rm -rf iproute2-5.2.0
 
-echo "# 6.64. Kbd-2.0.4"
-tar -Jxf kbd-2.0.4.tar.xz
-cd kbd-2.0.4
-patch -Np1 -i ../kbd-2.0.4-backspace-1.patch
+echo "# 6.64. Kbd-2.2.0"
+tar -Jxf kbd-2.2.0.tar.xz
+cd kbd-2.2.0
+patch -Np1 -i ../kbd-2.2.0-backspace-1.patch
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
 PKG_CONFIG_PATH=/tools/lib/pkgconfig ./configure --prefix=/usr --disable-vlock
 make -j $PARALLEL_JOBS
 make install
 if [[ $INSTALL_OPTIONAL_DOCS = 1 ]] ; then
-    mkdir -v /usr/share/doc/kbd-2.0.4
-    cp -R -v docs/doc/* /usr/share/doc/kbd-2.0.4
+    mkdir -v /usr/share/doc/kbd-2.2.0
+    cp -R -v docs/doc/* /usr/share/doc/kbd-2.2.0
 fi
 cd /sources
-rm -rf kbd-2.0.4
+rm -rf kbd-2.2.0
 
 echo "# 6.65. Libpipeline-1.5.1"
 tar -zxf libpipeline-1.5.1.tar.gz
@@ -1172,9 +1172,9 @@ make install
 cd /sources
 rm -rf util-linux-2.34
 
-echo "# 6.74. E2fsprogs-1.45.2"
-tar -zxf e2fsprogs-1.45.2.tar.gz
-cd e2fsprogs-1.45.2
+echo "# 6.74. E2fsprogs-1.45.3"
+tar -zxf e2fsprogs-1.45.3.tar.gz
+cd e2fsprogs-1.45.3
 mkdir -v build
 cd build
 ../configure --prefix=/usr           \
@@ -1197,7 +1197,7 @@ if [[ $INSTALL_OPTIONAL_DOCS = 1 ]] ; then
     install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
 fi
 cd /sources
-rm -rf e2fsprogs-1.45.2
+rm -rf e2fsprogs-1.45.3
 
 echo "# 6.75. Sysklogd-1.5.1"
 tar -zxf sysklogd-1.5.1.tar.gz

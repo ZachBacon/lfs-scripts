@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190714 v1.0
+# PiLFS Build Script SVN-20190803 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
 # https://intestinate.com/pilfs
 #
@@ -69,7 +69,7 @@ mpfr-4.0.2.tar.xz
 gmp-6.1.2.tar.xz
 mpc-1.1.0.tar.gz
 rpi-4.19.y.tar.gz
-glibc-2.29.tar.xz
+glibc-2.30.tar.xz
 tcl8.6.9-src.tar.gz
 expect5.45.4.tar.gz
 dejagnu-1.6.2.tar.gz
@@ -235,9 +235,9 @@ make INSTALL_HDR_PATH=dest headers_install
 cp -rv dest/include/* /tools/include
 cd $LFS/sources
 
-echo "# 5.7. Glibc-2.29"
-tar -Jxf glibc-2.29.tar.xz
-cd glibc-2.29
+echo "# 5.7. Glibc-2.30"
+tar -Jxf glibc-2.30.tar.xz
+cd glibc-2.30
 mkdir -v build
 cd build
 ../configure                             \
@@ -249,9 +249,9 @@ cd build
 make -j $PARALLEL_JOBS
 make install
 # Compatibility symlink for non ld-linux-armhf awareness
-ln -sv ld-2.29.so $LFS/tools/lib/ld-linux.so.3
+ln -sv ld-2.30.so $LFS/tools/lib/ld-linux.so.3
 cd $LFS/sources
-rm -rf glibc-2.29
+rm -rf glibc-2.30
 
 echo "# 5.8. Libstdc++ from GCC-9.1.0"
 tar -Jxf gcc-9.1.0.tar.xz
