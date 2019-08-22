@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190503-aarch64 v1.0
+# PiLFS Build Script SVN-20190803-aarch64 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
-# http://www.intestinate.com/pilfs
+# https://intestinate.com/pilfs
 #
 # Optional parameteres below:
 
-PARALLEL_JOBS=4             # Number of parallel make jobs, 1 for RPi1 and 4 for RPi2 and RPi3 recommended.
+PARALLEL_JOBS=4             # Number of parallel make jobs, 1 for RPi1 and 4 for RPi2 and up recommended.
 STRIP_AND_DELETE_DOCS=1     # Strip binaries and delete manpages to save space at the end of chapter 5?
 
 # End of optional parameters
@@ -64,28 +64,28 @@ mpfr-4.0.2.tar.xz
 gmp-6.1.2.tar.xz
 mpc-1.1.0.tar.gz
 rpi-4.19.y.tar.gz
-glibc-2.29.tar.xz
+glibc-2.30.tar.xz
 tcl8.6.9-src.tar.gz
 expect5.45.4.tar.gz
 expect5.45-aarch64-fix.patch
 dejagnu-1.6.2.tar.gz
 ncurses-6.1.tar.gz
 bash-5.0.tar.gz
-bison-3.3.2.tar.xz
-bzip2-1.0.6.tar.gz
+bison-3.4.1.tar.xz
+bzip2-1.0.8.tar.gz
 coreutils-8.31.tar.xz
 diffutils-3.7.tar.xz
-file-5.36.tar.gz
+file-5.37.tar.gz
 findutils-4.6.0.tar.gz
-gawk-5.0.0.tar.xz
-gettext-0.19.8.1.tar.xz
+gawk-5.0.1.tar.xz
+gettext-0.20.1.tar.xz
 grep-3.3.tar.xz
 gzip-1.10.tar.xz
 m4-1.4.18.tar.xz
-make-4.2.1.tar.bz2
+make-4.2.1.tar.gz
 patch-2.7.6.tar.xz
-perl-5.28.2.tar.xz
-Python-3.7.3.tar.xz
+perl-5.30.0.tar.xz
+Python-3.7.4.tar.xz
 sed-4.7.tar.xz
 tar-1.32.tar.xz
 texinfo-6.6.tar.xz
@@ -130,12 +130,12 @@ check_tarballs
 
 if [[ $(free | grep 'Swap:' | tr -d ' ' | cut -d ':' -f2) == "000" ]] ; then
     echo -e "\nYou are almost certainly going to want to add some swap space before building!"
-    echo -e "(See http://www.intestinate.com/pilfs/beyond.html#addswap for instructions)"
+    echo -e "(See https://intestinate.com/pilfs/beyond.html#addswap for instructions)"
     echo -e "Continue without swap?"
     select yn in "Yes" "No"; do
         case $yn in
-            Yes ) break;;
-            No ) exit;;
+            Yes) break;;
+            No) exit;;
         esac
     done
 fi
@@ -144,8 +144,8 @@ echo -e "\nThis is your last chance to quit before we start building... continue
 echo "(Note that if anything goes wrong during the build, the script will abort mission)"
 select yn in "Yes" "No"; do
     case $yn in
-        Yes ) break;;
-        No ) exit;;
+        Yes) break;;
+        No) exit;;
     esac
 done
 
@@ -214,7 +214,6 @@ cd build
     --disable-threads                              \
     --disable-libatomic                            \
     --disable-libgomp                              \
-    --disable-libmpx                               \
     --disable-libquadmath                          \
     --disable-libssp                               \
     --disable-libvtv                               \
@@ -233,9 +232,9 @@ make INSTALL_HDR_PATH=dest headers_install
 cp -rv dest/include/* /tools/include
 cd $LFS/sources
 
-echo "# 5.7. Glibc-2.29"
-tar -Jxf glibc-2.29.tar.xz
-cd glibc-2.29
+echo "# 5.7. Glibc-2.30"
+tar -Jxf glibc-2.30.tar.xz
+cd glibc-2.30
 mkdir -v build
 cd build
 ../configure                             \
@@ -247,9 +246,9 @@ cd build
 make -j $PARALLEL_JOBS
 make install
 # Compatibility symlink for non ld-linux-armhf awareness
-ln -sv ld-2.29.so $LFS/tools/lib/ld-linux.so.3
+ln -sv ld-2.30.so $LFS/tools/lib/ld-linux.so.3
 cd $LFS/sources
-rm -rf glibc-2.29
+rm -rf glibc-2.30
 
 echo "# 5.8. Libstdc++ from GCC-9.1.0"
 tar -Jxf gcc-9.1.0.tar.xz
@@ -409,22 +408,22 @@ ln -sv bash /tools/bin/sh
 cd $LFS/sources
 rm -rf bash-5.0
 
-echo "# 5.17. Bison-3.3.2"
-tar -Jxf bison-3.3.2.tar.xz
-cd bison-3.3.2
+echo "# 5.17. Bison-3.4.1"
+tar -Jxf bison-3.4.1.tar.xz
+cd bison-3.4.1
 ./configure --prefix=/tools
-make -j $PARALLEL_JOBS
+make -j 1
 make install
 cd $LFS/sources
-rm -rf bison-3.3.2
+rm -rf bison-3.4.1
 
-echo "# 5.18. Bzip2-1.0.6"
-tar -zxf bzip2-1.0.6.tar.gz
-cd bzip2-1.0.6
+echo "# 5.18. Bzip2-1.0.8"
+tar -zxf bzip2-1.0.8.tar.gz
+cd bzip2-1.0.8
 make -j $PARALLEL_JOBS
 make PREFIX=/tools install
 cd $LFS/sources
-rm -rf bzip2-1.0.6
+rm -rf bzip2-1.0.8
 
 echo "# 5.19. Coreutils-8.31"
 tar -Jxf coreutils-8.31.tar.xz
@@ -444,14 +443,14 @@ make install
 cd $LFS/sources
 rm -rf diffutils-3.7
 
-echo "# 5.21. File-5.36"
-tar -zxf file-5.36.tar.gz
-cd file-5.36
+echo "# 5.21. File-5.37"
+tar -zxf file-5.37.tar.gz
+cd file-5.37
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf file-5.36
+rm -rf file-5.37
 
 echo "# 5.22. Findutils-4.6.0"
 tar -zxf findutils-4.6.0.tar.gz
@@ -465,28 +464,23 @@ make install
 cd $LFS/sources
 rm -rf findutils-4.6.0
 
-echo "# 5.23. Gawk-5.0.0"
-tar -Jxf gawk-5.0.0.tar.xz
-cd gawk-5.0.0
+echo "# 5.23. Gawk-5.0.1"
+tar -Jxf gawk-5.0.1.tar.xz
+cd gawk-5.0.1
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf gawk-5.0.0
+rm -rf gawk-5.0.1
 
-echo "# 5.24. Gettext-0.19.8.1"
-tar -Jxf gettext-0.19.8.1.tar.xz
-cd gettext-0.19.8.1
-cd gettext-tools
-EMACS="no" ./configure --prefix=/tools --disable-shared
-make -C gnulib-lib
-make -C intl pluralx.c
-make -C src msgfmt
-make -C src msgmerge
-make -C src xgettext
-cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin
+echo "# 5.24. Gettext-0.20.1"
+tar -Jxf gettext-0.20.1.tar.xz
+cd gettext-0.20.1
+./configure --disable-shared
+make -j $PARALLEL_JOBS
+cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /tools/bin
 cd $LFS/sources
-rm -rf gettext-0.19.8.1
+rm -rf gettext-0.20.1
 
 echo "# 5.25. Grep-3.3"
 tar -Jxf grep-3.3.tar.xz
@@ -507,7 +501,7 @@ cd $LFS/sources
 rm -rf gzip-1.10
 
 echo "# 5.27. Make-4.2.1"
-tar -jxf make-4.2.1.tar.bz2
+tar -zxf make-4.2.1.tar.gz
 cd make-4.2.1
 sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
 ./configure --prefix=/tools --without-guile
@@ -525,26 +519,26 @@ make install
 cd $LFS/sources
 rm -rf patch-2.7.6
 
-echo "# 5.29. Perl-5.28.2"
-tar -Jxf perl-5.28.2.tar.xz
-cd perl-5.28.2
+echo "# 5.29. Perl-5.30.0"
+tar -Jxf perl-5.30.0.tar.xz
+cd perl-5.30.0
 sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
 make -j $PARALLEL_JOBS
 cp -v perl cpan/podlators/scripts/pod2man /tools/bin
-mkdir -pv /tools/lib/perl5/5.28.2
-cp -Rv lib/* /tools/lib/perl5/5.28.2
+mkdir -pv /tools/lib/perl5/5.30.0
+cp -Rv lib/* /tools/lib/perl5/5.30.0
 cd $LFS/sources
-rm -rf perl-5.28.2
+rm -rf perl-5.30.0
 
-echo "# 5.30. Python-3.7.3"
-tar -Jxf Python-3.7.3.tar.xz
-cd Python-3.7.3
+echo "# 5.30. Python-3.7.4"
+tar -Jxf Python-3.7.4.tar.xz
+cd Python-3.7.4
 sed -i '/def add_multiarch_paths/a \        return' setup.py
 ./configure --prefix=/tools --without-ensurepip
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf Python-3.7.3
+rm -rf Python-3.7.4
 
 echo "# 5.31. Sed-4.7"
 tar -Jxf sed-4.7.tar.xz
