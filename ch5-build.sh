@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190803 v1.0
+# PiLFS Build Script SVN-20190815 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
 # https://intestinate.com/pilfs
 #
@@ -60,7 +60,7 @@ function prebuild_sanity_check {
 function check_tarballs {
 LIST_OF_TARBALLS="
 binutils-2.32.tar.xz
-gcc-9.1.0.tar.xz
+gcc-9.2.0.tar.xz
 gcc-9.1.0-rpi1-cpu-default.patch
 gcc-9.1.0-rpi2-cpu-default.patch
 gcc-9.1.0-rpi3-cpu-default.patch
@@ -177,9 +177,9 @@ echo -e "\n=========================="
 printf 'Your SBU time is: %s\n' $(timer $sbu_time)
 echo -e "==========================\n"
 
-echo "# 5.5. gcc-9.1.0 - Pass 1"
-tar -Jxf gcc-9.1.0.tar.xz
-cd gcc-9.1.0
+echo "# 5.5. gcc-9.2.0 - Pass 1"
+tar -Jxf gcc-9.2.0.tar.xz
+cd gcc-9.2.0
 patch -Np1 -i ../gcc-9.1.0-rpi$RPI_MODEL-cpu-default.patch
 tar -Jxf ../mpfr-4.0.2.tar.xz
 mv -v mpfr-4.0.2 mpfr
@@ -225,7 +225,7 @@ cd build
 make
 make install
 cd $LFS/sources
-rm -rf gcc-9.1.0
+rm -rf gcc-9.2.0
 
 echo "# 5.6. Raspberry Pi Linux API Headers"
 tar -zxf rpi-4.19.y.tar.gz
@@ -253,9 +253,9 @@ ln -sv ld-2.30.so $LFS/tools/lib/ld-linux.so.3
 cd $LFS/sources
 rm -rf glibc-2.30
 
-echo "# 5.8. Libstdc++ from GCC-9.1.0"
-tar -Jxf gcc-9.1.0.tar.xz
-cd gcc-9.1.0
+echo "# 5.8. Libstdc++ from GCC-9.2.0"
+tar -Jxf gcc-9.2.0.tar.xz
+cd gcc-9.2.0
 mkdir -v build
 cd build
 ../libstdc++-v3/configure           \
@@ -265,11 +265,11 @@ cd build
     --disable-nls                   \
     --disable-libstdcxx-threads     \
     --disable-libstdcxx-pch         \
-    --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/9.1.0
+    --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/9.2.0
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf gcc-9.1.0
+rm -rf gcc-9.2.0
 
 echo "# 5.9. Binutils-2.32 - Pass 2"
 tar -Jxf binutils-2.32.tar.xz
@@ -293,9 +293,9 @@ cp -v ld/ld-new /tools/bin
 cd $LFS/sources
 rm -rf binutils-2.32
 
-echo "# 5.10. gcc-9.1.0 - Pass 2"
-tar -Jxf gcc-9.1.0.tar.xz
-cd gcc-9.1.0
+echo "# 5.10. gcc-9.2.0 - Pass 2"
+tar -Jxf gcc-9.2.0.tar.xz
+cd gcc-9.2.0
 patch -Np1 -i ../gcc-9.1.0-rpi$RPI_MODEL-cpu-default.patch
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
@@ -336,7 +336,7 @@ make
 make install
 ln -sv gcc /tools/bin/cc
 cd $LFS/sources
-rm -rf gcc-9.1.0
+rm -rf gcc-9.2.0
 
 echo "# 5.11. Tcl-8.6.9"
 tar -zxf tcl8.6.9-src.tar.gz

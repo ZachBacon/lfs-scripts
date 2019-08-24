@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190803 v1.0
+# PiLFS Build Script SVN-20190815 v1.0
 # Builds chapters 6.7 - Raspberry Pi Linux API Headers to 6.77 - Eudev
 # https://intestinate.com/pilfs
 #
@@ -47,12 +47,12 @@ zlib-1.2.11.tar.xz
 file-5.37.tar.gz
 readline-8.0.tar.gz
 m4-1.4.18.tar.xz
-bc-2.1.1.tar.gz
+bc-2.1.3.tar.gz
 binutils-2.32.tar.xz
 gmp-6.1.2.tar.xz
 mpfr-4.0.2.tar.xz
 mpc-1.1.0.tar.gz
-gcc-9.1.0.tar.xz
+gcc-9.2.0.tar.xz
 gcc-9.1.0-rpi1-cpu-default.patch
 gcc-9.1.0-rpi2-cpu-default.patch
 gcc-9.1.0-rpi3-cpu-default.patch
@@ -85,7 +85,7 @@ automake-1.16.1.tar.xz
 xz-5.2.4.tar.xz
 kmod-26.tar.xz
 gettext-0.20.1.tar.xz
-elfutils-0.176.tar.bz2
+elfutils-0.177.tar.bz2
 libffi-3.2.1.tar.gz
 openssl-1.1.1c.tar.gz
 Python-3.7.4.tar.xz
@@ -115,10 +115,10 @@ sysvinit-2.95-consolidated-1.patch
 eudev-3.2.8.tar.gz
 udev-lfs-20171102.tar.xz
 util-linux-2.34.tar.xz
-man-db-2.8.5.tar.xz
+man-db-2.8.6.1.tar.xz
 tar-1.32.tar.xz
 texinfo-6.6.tar.xz
-vim-8.1.1535.tar.gz
+vim-8.1.1846.tar.gz
 master.tar.gz
 "
 
@@ -328,14 +328,14 @@ make install
 cd /sources
 rm -rf m4-1.4.18
 
-echo "# 6.15. Bc-2.1.1"
-tar -zxf bc-2.1.1.tar.gz
-cd bc-2.1.1
+echo "# 6.15. Bc-2.1.3"
+tar -zxf bc-2.1.3.tar.gz
+cd bc-2.1.3
 PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
 make -j $PARALLEL_JOBS
 make install
 cd /sources
-rm -rf bc-2.1.1
+rm -rf bc-2.1.3
 
 echo "# 6.16. Binutils-2.32"
 tar -Jxf binutils-2.32.tar.xz
@@ -425,9 +425,9 @@ sed -i 's/yes/no/' /etc/default/useradd
 cd /sources
 rm -rf shadow-4.7
 
-echo "# 6.21. GCC-9.1.0"
-tar -Jxf gcc-9.1.0.tar.xz
-cd gcc-9.1.0
+echo "# 6.21. GCC-9.2.0"
+tar -Jxf gcc-9.2.0.tar.xz
+cd gcc-9.2.0
 patch -Np1 -i ../gcc-9.1.0-rpi$RPI_MODEL-cpu-default.patch
 mkdir -v build
 cd build
@@ -439,14 +439,16 @@ SED=sed                               \
              --with-system-zlib
 make
 make install
+rm -rf /usr/lib/gcc/$(gcc -dumpmachine)/9.2.0/include-fixed/bits/
+chown -v -R root:root /usr/lib/gcc/*linux-gnu*/9.2.0/include{,-fixed}
 ln -sv ../usr/bin/cpp /lib
 ln -sv gcc /usr/bin/cc
 install -v -dm755 /usr/lib/bfd-plugins
-ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/9.1.0/liblto_plugin.so /usr/lib/bfd-plugins/
+ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/9.2.0/liblto_plugin.so /usr/lib/bfd-plugins/
 mkdir -pv /usr/share/gdb/auto-load/usr/lib
 mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
 cd /sources
-rm -rf gcc-9.1.0
+rm -rf gcc-9.2.0
 
 echo "# 6.22. Bzip2-1.0.8"
 tar -zxf bzip2-1.0.8.tar.gz
@@ -810,15 +812,15 @@ chmod -v 0755 /usr/lib/preloadable_libintl.so
 cd /sources
 rm -rf gettext-0.20.1
 
-echo "6.48. Libelf from Elfutils-0.176"
-tar -jxf elfutils-0.176.tar.bz2
-cd elfutils-0.176
+echo "6.48. Libelf from Elfutils-0.177"
+tar -jxf elfutils-0.177.tar.bz2
+cd elfutils-0.177
 ./configure --prefix=/usr
 make -j $PARALLEL_JOBS
 make -C libelf install
 install -vm644 config/libelf.pc /usr/lib/pkgconfig
 cd /sources
-rm -rf elfutils-0.176
+rm -rf elfutils-0.177
 
 if [[ $INSTALL_SYSTEMD_DEPS = 1 ]] ; then
 echo "6.49. libffi-3.2.1"
@@ -1061,11 +1063,11 @@ make install
 cd /sources
 rm -rf patch-2.7.6
 
-echo "# 6.68. Man-DB-2.8.5"
-tar -Jxf man-db-2.8.5.tar.xz
-cd man-db-2.8.5
+echo "# 6.68. Man-DB-2.8.6.1"
+tar -Jxf man-db-2.8.6.1.tar.xz
+cd man-db-2.8.6.1
 ./configure --prefix=/usr                        \
-            --docdir=/usr/share/doc/man-db-2.8.5 \
+            --docdir=/usr/share/doc/man-db-2.8.6.1 \
             --sysconfdir=/etc                    \
             --disable-setuid                     \
             --enable-cache-owner=bin             \
@@ -1077,7 +1079,7 @@ cd man-db-2.8.5
 make -j $PARALLEL_JOBS
 make install
 cd /sources
-rm -rf man-db-2.8.5
+rm -rf man-db-2.8.6.1
 
 echo "# 6.69. Tar-1.32"
 tar -Jxf tar-1.32.tar.xz
@@ -1102,9 +1104,9 @@ make install
 cd /sources
 rm -rf texinfo-6.6
 
-echo "# 6.71. Vim-8.1.1535"
-tar -zxf vim-8.1.1535.tar.gz
-cd vim-8.1.1535
+echo "# 6.71. Vim-8.1.1846"
+tar -zxf vim-8.1.1846.tar.gz
+cd vim-8.1.1846
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 ./configure --prefix=/usr
 make -j $PARALLEL_JOBS
@@ -1113,7 +1115,7 @@ ln -sv vim /usr/bin/vi
 for L in /usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
-ln -sv ../vim/vim81/doc /usr/share/doc/vim-8.1.1535
+ln -sv ../vim/vim81/doc /usr/share/doc/vim-8.1.1846
 cat > /etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
@@ -1132,7 +1134,7 @@ endif
 " End /etc/vimrc
 EOF
 cd /sources
-rm -rf vim-8.1.1535
+rm -rf vim-8.1.1846
 
 echo "# 6.72. Procps-ng-3.3.15"
 tar -Jxf procps-ng-3.3.15.tar.xz
