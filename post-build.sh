@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190815 v1.0
+# PiLFS Build Script SVN-20190902 v1.0
 # Performs post-build installs starting from chapter 6.80. Cleaning Up
 # https://intestinate.com/pilfs
 #
@@ -41,8 +41,8 @@ Mozilla-CA-20180117.tar.gz
 Net-SSLeay-1.88.tar.gz
 IO-Socket-SSL-2.066.tar.gz
 ntp-4.2.8p13.tar.gz
-blfs-bootscripts-20190609.tar.xz
-dhcpcd-8.0.2.tar.xz
+blfs-bootscripts-20190902.tar.xz
+dhcpcd-8.0.3.tar.xz
 unzip60.tar.gz
 sqlite-autoconf-3290000.tar.gz
 curl-7.65.3.tar.xz
@@ -52,10 +52,10 @@ git-manpages-2.23.0.tar.xz
 libnl-3.4.0.tar.gz
 wpa_supplicant-2.9.tar.gz
 iw-5.3.tar.xz
-swig-4.0.0.tar.gz
+swig-4.0.1.tar.gz
 wireless-regdb-2019.06.03.tar.xz
 libgpg-error-1.36.tar.bz2
-libgcrypt-1.8.4.tar.bz2
+libgcrypt-1.8.5.tar.bz2
 crda-3.18.tar.xz
 alsa-lib-1.1.9.tar.bz2
 alsa-utils-1.1.9.tar.bz2
@@ -109,22 +109,22 @@ rm -f /usr/lib/libfl.a
 rm -f /usr/lib/libz.a
 find /usr/lib /usr/libexec -name \*.la -delete
 
-echo "# 7.2. LFS-Bootscripts-20190524"
-tar -Jxf lfs-bootscripts-20190524.tar.xz
-cd lfs-bootscripts-20190524
+echo "# 7.2. LFS-Bootscripts-20190902"
+tar -Jxf lfs-bootscripts-20190902.tar.xz
+cd lfs-bootscripts-20190902
 make install
 cd /sources
-rm -rf lfs-bootscripts-20190524
+rm -rf lfs-bootscripts-20190902
 
-echo "# 7.2.X PiLFS-bootscripts-20190714"
-tar -Jxf pilfs-bootscripts-20190714.tar.xz
-cd pilfs-bootscripts-20190714
+echo "# 7.2.X PiLFS-bootscripts-20190902"
+tar -Jxf pilfs-bootscripts-20190902.tar.xz
+cd pilfs-bootscripts-20190902
 make install-everything
 cat > /etc/fake-hwclock.data << "EOF"
-2019-08-15 00:00:00
+2019-09-02 00:00:00
 EOF
 cd /sources
-rm -rf pilfs-bootscripts-20190714
+rm -rf pilfs-bootscripts-20190902
 
 echo "# 7.5.1. Creating Network Interface Configuration Files"
 cat > /etc/sysconfig/static.eth0 << "EOF"
@@ -376,16 +376,18 @@ devtmpfs       /dev         devtmpfs mode=0755,nosuid            0     0
 EOF
 
 echo "# 9.1. The End"
-echo SVN-20190815 > /etc/lfs-release
+echo SVN-20190902 > /etc/lfs-release
 cat > /etc/lsb-release << "EOF"
 DISTRIB_ID="PiLFS"
-DISTRIB_RELEASE="SVN-20190815"
+DISTRIB_RELEASE="SVN-20190902"
 DISTRIB_CODENAME="Mogwai"
 DISTRIB_DESCRIPTION="https://intestinate.com/pilfs"
 EOF
 
-echo "# Which-2.21"
+echo "# Moving on to /usr/src"
 cd /usr/src
+
+echo "# Which-2.21"
 tar -zxf which-2.21.tar.gz
 cd which-2.21
 ./configure --prefix=/usr
@@ -582,9 +584,9 @@ EOF
 cd /usr/src
 rm -rf ntp-4.2.8p13
 
-echo "# dhcpcd-8.0.2"
-tar -Jxf dhcpcd-8.0.2.tar.xz
-cd dhcpcd-8.0.2
+echo "# dhcpcd-8.0.3"
+tar -Jxf dhcpcd-8.0.3.tar.xz
+cd dhcpcd-8.0.3
 ./configure --libexecdir=/lib/dhcpcd \
             --dbdir=/var/lib/dhcpcd
 make -j $PARALLEL_JOBS
@@ -598,7 +600,7 @@ DHCP_STOP="-k"
 EOF
 cp -v /etc/sysconfig/ifconfig.eth0 /etc/sysconfig/dhcp.eth0
 cd /usr/src
-rm -rf dhcpcd-8.0.2
+rm -rf dhcpcd-8.0.3
 
 echo "# UnZip-6.0"
 tar -zxf unzip60.tar.gz
@@ -737,18 +739,21 @@ rm -rf iw-5.3
 echo "# setuptools"
 /usr/bin/pip install -U pip setuptools
 
-echo "# SWIG-4.0.0"
-tar -zxf swig-4.0.0.tar.gz
-cd swig-4.0.0
+echo "# SWIG-4.0.1"
+tar -zxf swig-4.0.1.tar.gz
+cd swig-4.0.1
 ./configure --prefix=/usr \
             --without-maximum-compile-warnings
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf swig-4.0.0
+rm -rf swig-4.0.1
 
 echo "# M2Crypto"
 /usr/bin/pip install M2Crypto
+
+echo "# Restore pip3"
+python3 -m pip install --force pip
 
 echo "# wireless-regdb-2019.06.03"
 tar -Jxf wireless-regdb-2019.06.03.tar.xz
@@ -768,14 +773,14 @@ make install
 cd /usr/src
 rm -rf libgpg-error-1.36
 
-echo "# libgcrypt-1.8.4"
-tar -jxf libgcrypt-1.8.4.tar.bz2
-cd libgcrypt-1.8.4
+echo "# libgcrypt-1.8.5"
+tar -jxf libgcrypt-1.8.5.tar.bz2
+cd libgcrypt-1.8.5
 ./configure --prefix=/usr
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf libgcrypt-1.8.4
+rm -rf libgcrypt-1.8.5
 
 echo "# crda-3.18"
 tar -Jxf crda-3.18.tar.xz
@@ -812,14 +817,13 @@ rm -rf alsa-utils-1.1.9
 echo "# rpi-update"
 mv 1BOfJ rpi-update
 install -v -m755 rpi-update /usr/sbin
-WANT_PI4=1 /usr/sbin/rpi-update
 
 echo "# BLFS Boot Scripts"
-tar -Jxf blfs-bootscripts-20190609.tar.xz
-cd blfs-bootscripts-20190609
+tar -Jxf blfs-bootscripts-20190902.tar.xz
+cd blfs-bootscripts-20190902
 make install-ntpd install-service-dhcpcd install-service-wpa
 cd /usr/src
-rm -rf blfs-bootscripts-20190609
+rm -rf blfs-bootscripts-20190902
 
 echo "# Cleaning up"
 ls -1 > /tmp/installed_tarballs.txt

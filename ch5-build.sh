@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190815 v1.0
+# PiLFS Build Script SVN-20190902 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
 # https://intestinate.com/pilfs
 #
@@ -80,7 +80,7 @@ bzip2-1.0.8.tar.gz
 coreutils-8.31.tar.xz
 diffutils-3.7.tar.xz
 file-5.37.tar.gz
-findutils-4.6.0.tar.gz
+findutils-4.7.0.tar.xz
 gawk-5.0.1.tar.xz
 gettext-0.20.1.tar.xz
 grep-3.3.tar.xz
@@ -453,17 +453,14 @@ make install
 cd $LFS/sources
 rm -rf file-5.37
 
-echo "# 5.22. Findutils-4.6.0"
-tar -zxf findutils-4.6.0.tar.gz
-cd findutils-4.6.0
-sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
-sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
-echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
+echo "# 5.22. Findutils-4.7.0"
+tar -Jxf findutils-4.7.0.tar.xz
+cd findutils-4.7.0
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf findutils-4.6.0
+rm -rf findutils-4.7.0
 
 echo "# 5.23. Gawk-5.0.1"
 tar -Jxf gawk-5.0.1.tar.xz

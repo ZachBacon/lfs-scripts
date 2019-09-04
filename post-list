@@ -12,8 +12,8 @@ https://cpan.metacpan.org/authors/id/A/AB/ABH/Mozilla-CA-20180117.tar.gz
 https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-1.88.tar.gz
 https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-2.066.tar.gz
 https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.8p13.tar.gz
-http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20190609.tar.xz
-https://roy.marples.name/downloads/dhcpcd/dhcpcd-8.0.2.tar.xz
+http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20190902.tar.xz
+https://roy.marples.name/downloads/dhcpcd/dhcpcd-8.0.3.tar.xz
 https://downloads.sourceforge.net/infozip/unzip60.tar.gz
 https://sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
 https://curl.haxx.se/download/curl-7.65.3.tar.xz
@@ -23,10 +23,10 @@ https://www.kernel.org/pub/software/scm/git/git-manpages-2.23.0.tar.xz
 https://github.com/thom311/libnl/releases/download/libnl3_4_0/libnl-3.4.0.tar.gz
 https://w1.fi/releases/wpa_supplicant-2.9.tar.gz
 https://www.kernel.org/pub/software/network/iw/iw-5.3.tar.xz
-https://downloads.sourceforge.net/swig/swig-4.0.0.tar.gz
+https://downloads.sourceforge.net/swig/swig-4.0.1.tar.gz
 https://mirrors.edge.kernel.org/pub/software/network/wireless-regdb/wireless-regdb-2019.06.03.tar.xz
 https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.36.tar.bz2
-https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.4.tar.bz2
+https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.5.tar.bz2
 https://www.kernel.org/pub/software/network/crda/crda-3.18.tar.xz
 ftp://ftp.alsa-project.org/pub/lib/alsa-lib-1.1.9.tar.bz2
 ftp://ftp.alsa-project.org/pub/utils/alsa-utils-1.1.9.tar.bz2

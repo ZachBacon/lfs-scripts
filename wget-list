@@ -17,7 +17,7 @@ https://dev.gentoo.org/~blueness/eudev/eudev-3.2.8.tar.gz
 https://prdownloads.sourceforge.net/expat/expat-2.2.7.tar.xz
 https://prdownloads.sourceforge.net/expect/expect5.45.4.tar.gz
 ftp://ftp.astron.com/pub/file/file-5.37.tar.gz
-http://ftp.gnu.org/gnu/findutils/findutils-4.6.0.tar.gz
+http://ftp.gnu.org/gnu/findutils/findutils-4.7.0.tar.xz
 https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
 http://ftp.gnu.org/gnu/gawk/gawk-5.0.1.tar.xz
 http://ftp.gnu.org/gnu/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz
@@ -36,16 +36,16 @@ https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.2.0.tar.xz
 https://www.kernel.org/pub/linux/utils/kbd/kbd-2.2.0.tar.xz
 https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-26.tar.xz
 http://www.greenwoodsoftware.com/less/less-551.tar.gz
-http://www.linuxfromscratch.org/lfs/downloads/development/lfs-bootscripts-20190524.tar.xz
+http://www.linuxfromscratch.org/lfs/downloads/development/lfs-bootscripts-20190902.tar.xz
 https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.27.tar.xz
 ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz
 http://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.5.1.tar.gz
 http://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz
 http://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.xz
 http://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz
-http://download.savannah.gnu.org/releases/man-db/man-db-2.8.6.1.tar.xz
+http://download.savannah.gnu.org/releases/man-db/man-db-2.8.7.tar.xz
 https://www.kernel.org/pub/linux/docs/man-pages/man-pages-5.02.tar.xz
-https://github.com/mesonbuild/meson/releases/download/0.51.1/meson-0.51.1.tar.gz
+https://github.com/mesonbuild/meson/releases/download/0.51.2/meson-0.51.2.tar.gz
 https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz
 http://www.mpfr.org/mpfr-4.0.2/mpfr-4.0.2.tar.xz
 https://github.com/ninja-build/ninja/archive/v1.9.0/ninja-1.9.0.tar.gz
@@ -84,6 +84,6 @@ https://intestinate.com/pilfs/patches/gcc-9.1.0-rpi3-cpu-default.patch
 https://intestinate.com/pilfs/patches/gcc-9.1.0-rpi4-cpu-default.patch
 https://intestinate.com/pilfs/scripts/ch5-build.sh
 https://intestinate.com/pilfs/scripts/ch6-build.sh
-https://intestinate.com/pilfs/scripts/pilfs-bootscripts-20190714.tar.xz
+https://intestinate.com/pilfs/scripts/pilfs-bootscripts-20190902.tar.xz
 https://github.com/raspberrypi/linux/archive/rpi-4.19.y.tar.gz
 https://github.com/raspberrypi/firmware/archive/master.tar.gz

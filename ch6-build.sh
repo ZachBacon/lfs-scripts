@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190815 v1.0
+# PiLFS Build Script SVN-20190902 v1.0
 # Builds chapters 6.7 - Raspberry Pi Linux API Headers to 6.77 - Eudev
 # https://intestinate.com/pilfs
 #
@@ -91,7 +91,7 @@ openssl-1.1.1c.tar.gz
 Python-3.7.4.tar.xz
 python-3.7.4-docs-html.tar.bz2
 ninja-1.9.0.tar.gz
-meson-0.51.1.tar.gz
+meson-0.51.2.tar.gz
 procps-ng-3.3.15.tar.xz
 e2fsprogs-1.45.3.tar.gz
 coreutils-8.31.tar.xz
@@ -99,7 +99,7 @@ coreutils-8.31-i18n-1.patch
 check-0.12.0.tar.gz
 diffutils-3.7.tar.xz
 gawk-5.0.1.tar.xz
-findutils-4.6.0.tar.gz
+findutils-4.7.0.tar.xz
 groff-1.22.4.tar.gz
 less-551.tar.gz
 gzip-1.10.tar.xz
@@ -115,7 +115,7 @@ sysvinit-2.95-consolidated-1.patch
 eudev-3.2.8.tar.gz
 udev-lfs-20171102.tar.xz
 util-linux-2.34.tar.xz
-man-db-2.8.6.1.tar.xz
+man-db-2.8.7.tar.xz
 tar-1.32.tar.xz
 texinfo-6.6.tar.xz
 vim-8.1.1846.tar.gz
@@ -895,14 +895,14 @@ rm -rf ninja-1.9.0
 fi
 
 if [[ $INSTALL_SYSTEMD_DEPS = 1 ]] ; then
-echo "6.53. Meson-0.51.1"
-tar -zxf meson-0.51.1.tar.gz
-cd meson-0.51.1
+echo "6.53. Meson-0.51.2"
+tar -zxf meson-0.51.2.tar.gz
+cd meson-0.51.2
 python3 setup.py build
 python3 setup.py install --root=dest
 cp -rv dest/* /
 cd /sources
-rm -rf meson-0.51.1
+rm -rf meson-0.51.2
 fi
 
 echo "# 6.54. Coreutils-8.31"
@@ -962,20 +962,16 @@ fi
 cd /sources
 rm -rf gawk-5.0.1
 
-echo "# 6.58. Findutils-4.6.0"
-tar -zxf findutils-4.6.0.tar.gz
-cd findutils-4.6.0
-sed -i 's/test-lock..EXEEXT.//' tests/Makefile.in
-sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
-sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
-echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
+echo "# 6.58. Findutils-4.7.0"
+tar -Jxf findutils-4.7.0.tar.xz
+cd findutils-4.7.0
 ./configure --prefix=/usr --localstatedir=/var/lib/locate
 make -j $PARALLEL_JOBS
 make install
 mv -v /usr/bin/find /bin
 sed -i 's/find:=${BINDIR}/find:=\/bin/' /usr/bin/updatedb
 cd /sources
-rm -rf findutils-4.6.0
+rm -rf findutils-4.7.0
 
 echo "# 6.59. Groff-1.22.4"
 tar -zxf groff-1.22.4.tar.gz
@@ -986,7 +982,7 @@ make install
 cd /sources
 rm -rf groff-1.22.4
 
-# 6.60. GRUB-2.02
+# 6.60. GRUB-2.04
 # We don't use GRUB on ARM
 
 echo "# 6.61. Less-551"
@@ -1063,11 +1059,11 @@ make install
 cd /sources
 rm -rf patch-2.7.6
 
-echo "# 6.68. Man-DB-2.8.6.1"
-tar -Jxf man-db-2.8.6.1.tar.xz
-cd man-db-2.8.6.1
+echo "# 6.68. Man-DB-2.8.7"
+tar -Jxf man-db-2.8.7.tar.xz
+cd man-db-2.8.7
 ./configure --prefix=/usr                        \
-            --docdir=/usr/share/doc/man-db-2.8.6.1 \
+            --docdir=/usr/share/doc/man-db-2.8.7 \
             --sysconfdir=/etc                    \
             --disable-setuid                     \
             --enable-cache-owner=bin             \
@@ -1079,7 +1075,7 @@ cd man-db-2.8.6.1
 make -j $PARALLEL_JOBS
 make install
 cd /sources
-rm -rf man-db-2.8.6.1
+rm -rf man-db-2.8.7
 
 echo "# 6.69. Tar-1.32"
 tar -Jxf tar-1.32.tar.xz
