@@ -46,17 +46,11 @@ dhcpcd-8.0.3.tar.xz
 unzip60.tar.gz
 sqlite-autoconf-3290000.tar.gz
 curl-7.65.3.tar.xz
-Python-2.7.16.tar.xz
 git-2.23.0.tar.xz
 git-manpages-2.23.0.tar.xz
 libnl-3.4.0.tar.gz
 wpa_supplicant-2.9.tar.gz
 iw-5.3.tar.xz
-swig-4.0.1.tar.gz
-wireless-regdb-2019.06.03.tar.xz
-libgpg-error-1.36.tar.bz2
-libgcrypt-1.8.5.tar.bz2
-crda-3.18.tar.xz
 alsa-lib-1.1.9.tar.bz2
 alsa-utils-1.1.9.tar.bz2
 1BOfJ
@@ -641,21 +635,6 @@ make install
 cd /usr/src
 rm -rf curl-7.65.3
 
-echo "# Python-2.7.16"
-tar -Jxf Python-2.7.16.tar.xz
-cd Python-2.7.16
-./configure --prefix=/usr       \
-            --enable-shared     \
-            --with-system-expat \
-            --with-system-ffi   \
-            --with-ensurepip=yes \
-            --enable-unicode=ucs4
-make -j $PARALLEL_JOBS
-make install
-chmod -v 755 /usr/lib/libpython2.7.so.1.0
-cd /usr/src
-rm -rf Python-2.7.16
-
 echo "# Git-2.23.0"
 tar -Jxf git-2.23.0.tar.xz
 cd git-2.23.0
@@ -735,61 +714,6 @@ make -j $PARALLEL_JOBS
 make SBINDIR=/sbin install
 cd /usr/src
 rm -rf iw-5.3
-
-echo "# setuptools"
-/usr/bin/pip install -U pip setuptools
-
-echo "# SWIG-4.0.1"
-tar -zxf swig-4.0.1.tar.gz
-cd swig-4.0.1
-./configure --prefix=/usr \
-            --without-maximum-compile-warnings
-make -j $PARALLEL_JOBS
-make install
-cd /usr/src
-rm -rf swig-4.0.1
-
-echo "# M2Crypto"
-/usr/bin/pip install M2Crypto
-
-echo "# Restore pip3"
-python3 -m pip install --force pip
-
-echo "# wireless-regdb-2019.06.03"
-tar -Jxf wireless-regdb-2019.06.03.tar.xz
-cd wireless-regdb-2019.06.03
-mkdir -vp /usr/lib/crda
-cp -v regulatory.bin /usr/lib/crda
-cd /usr/src
-rm -rf wireless-regdb-2019.06.03
-
-echo "# libgpg-error-1.36"
-tar -jxf libgpg-error-1.36.tar.bz2
-cd libgpg-error-1.36
-sed -i 's/namespace/pkg_&/' src/Makefile.{am,in} src/mkstrtable.awk
-./configure --prefix=/usr
-make -j $PARALLEL_JOBS
-make install
-cd /usr/src
-rm -rf libgpg-error-1.36
-
-echo "# libgcrypt-1.8.5"
-tar -jxf libgcrypt-1.8.5.tar.bz2
-cd libgcrypt-1.8.5
-./configure --prefix=/usr
-make -j $PARALLEL_JOBS
-make install
-cd /usr/src
-rm -rf libgcrypt-1.8.5
-
-echo "# crda-3.18"
-tar -Jxf crda-3.18.tar.xz
-cd crda-3.18
-sed -i 's/-Werror//' Makefile
-USE_GCRYPT=1 make -j $PARALLEL_JOBS
-USE_GCRYPT=1 make install
-cd /usr/src
-rm -rf crda-3.18
 
 echo "# alsa-lib-1.1.9"
 tar -jxf alsa-lib-1.1.9.tar.bz2
