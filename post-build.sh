@@ -742,6 +742,9 @@ echo "# rpi-update"
 mv 1BOfJ rpi-update
 install -v -m755 rpi-update /usr/sbin
 
+echo "# pip3 update"
+pip3 install --upgrade pip
+
 echo "# BLFS Boot Scripts"
 tar -Jxf blfs-bootscripts-20190902.tar.xz
 cd blfs-bootscripts-20190902
