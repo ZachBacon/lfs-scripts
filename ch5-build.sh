@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190902 v1.0
+# PiLFS Build Script SVN-20191205 v1.0
 # Builds chapters 5.4 - Binutils to 5.34 - Xz
 # https://intestinate.com/pilfs
 #
@@ -59,7 +59,7 @@ function prebuild_sanity_check {
 
 function check_tarballs {
 LIST_OF_TARBALLS="
-binutils-2.32.tar.xz
+binutils-2.33.1.tar.xz
 gcc-9.2.0.tar.xz
 gcc-9.1.0-rpi1-cpu-default.patch
 gcc-9.1.0-rpi2-cpu-default.patch
@@ -70,12 +70,12 @@ gmp-6.1.2.tar.xz
 mpc-1.1.0.tar.gz
 rpi-4.19.y.tar.gz
 glibc-2.30.tar.xz
-tcl8.6.9-src.tar.gz
+tcl8.6.10-src.tar.gz
 expect5.45.4.tar.gz
 dejagnu-1.6.2.tar.gz
 ncurses-6.1.tar.gz
 bash-5.0.tar.gz
-bison-3.4.1.tar.xz
+bison-3.4.2.tar.xz
 bzip2-1.0.8.tar.gz
 coreutils-8.31.tar.xz
 diffutils-3.7.tar.xz
@@ -88,11 +88,11 @@ gzip-1.10.tar.xz
 m4-1.4.18.tar.xz
 make-4.2.1.tar.gz
 patch-2.7.6.tar.xz
-perl-5.30.0.tar.xz
-Python-3.7.4.tar.xz
+perl-5.30.1.tar.xz
+Python-3.8.0.tar.xz
 sed-4.7.tar.xz
 tar-1.32.tar.xz
-texinfo-6.6.tar.xz
+texinfo-6.7.tar.xz
 xz-5.2.4.tar.xz
 "
 
@@ -156,10 +156,10 @@ done
 total_time=$(timer)
 sbu_time=$(timer)
 
-echo "# 5.4. Binutils-2.32 - Pass 1"
+echo "# 5.4. Binutils-2.33.1 - Pass 1"
 cd $LFS/sources
-tar -Jxf binutils-2.32.tar.xz
-cd binutils-2.32
+tar -Jxf binutils-2.33.1.tar.xz
+cd binutils-2.33.1
 mkdir -v build
 cd build
 ../configure --prefix=/tools            \
@@ -171,7 +171,7 @@ cd build
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf binutils-2.32
+rm -rf binutils-2.33.1
 
 echo -e "\n=========================="
 printf 'Your SBU time is: %s\n' $(timer $sbu_time)
@@ -271,9 +271,9 @@ make install
 cd $LFS/sources
 rm -rf gcc-9.2.0
 
-echo "# 5.9. Binutils-2.32 - Pass 2"
-tar -Jxf binutils-2.32.tar.xz
-cd binutils-2.32
+echo "# 5.9. Binutils-2.33.1 - Pass 2"
+tar -Jxf binutils-2.33.1.tar.xz
+cd binutils-2.33.1
 mkdir -v build
 cd build
 CC=$LFS_TGT-gcc                \
@@ -291,7 +291,7 @@ make -C ld clean
 make -C ld LIB_PATH=/usr/lib:/lib
 cp -v ld/ld-new /tools/bin
 cd $LFS/sources
-rm -rf binutils-2.32
+rm -rf binutils-2.33.1
 
 echo "# 5.10. gcc-9.2.0 - Pass 2"
 tar -Jxf gcc-9.2.0.tar.xz
@@ -338,9 +338,9 @@ ln -sv gcc /tools/bin/cc
 cd $LFS/sources
 rm -rf gcc-9.2.0
 
-echo "# 5.11. Tcl-8.6.9"
-tar -zxf tcl8.6.9-src.tar.gz
-cd tcl8.6.9
+echo "# 5.11. Tcl-8.6.10"
+tar -zxf tcl8.6.10-src.tar.gz
+cd tcl8.6.10
 cd unix
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
@@ -349,7 +349,7 @@ chmod -v u+w /tools/lib/libtcl8.6.so
 make install-private-headers
 ln -sv tclsh8.6 /tools/bin/tclsh
 cd $LFS/sources
-rm -rf tcl8.6.9
+rm -rf tcl8.6.10
 
 echo "# 5.12. Expect-5.45.4"
 tar -zxf expect5.45.4.tar.gz
@@ -409,14 +409,14 @@ ln -sv bash /tools/bin/sh
 cd $LFS/sources
 rm -rf bash-5.0
 
-echo "# 5.17. Bison-3.4.1"
-tar -Jxf bison-3.4.1.tar.xz
-cd bison-3.4.1
+echo "# 5.17. Bison-3.4.2"
+tar -Jxf bison-3.4.2.tar.xz
+cd bison-3.4.2
 ./configure --prefix=/tools
 make -j 1
 make install
 cd $LFS/sources
-rm -rf bison-3.4.1
+rm -rf bison-3.4.2
 
 echo "# 5.18. Bzip2-1.0.8"
 tar -zxf bzip2-1.0.8.tar.gz
@@ -517,26 +517,26 @@ make install
 cd $LFS/sources
 rm -rf patch-2.7.6
 
-echo "# 5.29. Perl-5.30.0"
-tar -Jxf perl-5.30.0.tar.xz
-cd perl-5.30.0
+echo "# 5.29. Perl-5.30.1"
+tar -Jxf perl-5.30.1.tar.xz
+cd perl-5.30.1
 sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
 make -j $PARALLEL_JOBS
 cp -v perl cpan/podlators/scripts/pod2man /tools/bin
-mkdir -pv /tools/lib/perl5/5.30.0
-cp -Rv lib/* /tools/lib/perl5/5.30.0
+mkdir -pv /tools/lib/perl5/5.30.1
+cp -Rv lib/* /tools/lib/perl5/5.30.1
 cd $LFS/sources
-rm -rf perl-5.30.0
+rm -rf perl-5.30.1
 
-echo "# 5.30. Python-3.7.4"
-tar -Jxf Python-3.7.4.tar.xz
-cd Python-3.7.4
+echo "# 5.30. Python-3.8.0"
+tar -Jxf Python-3.8.0.tar.xz
+cd Python-3.8.0
 sed -i '/def add_multiarch_paths/a \        return' setup.py
 ./configure --prefix=/tools --without-ensurepip
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf Python-3.7.4
+rm -rf Python-3.8.0
 
 echo "# 5.31. Sed-4.7"
 tar -Jxf sed-4.7.tar.xz
@@ -556,14 +556,14 @@ make install
 cd $LFS/sources
 rm -rf tar-1.32
 
-echo "# 5.33. Texinfo-6.6"
-tar -Jxf texinfo-6.6.tar.xz
-cd texinfo-6.6
+echo "# 5.33. Texinfo-6.7"
+tar -Jxf texinfo-6.7.tar.xz
+cd texinfo-6.7
 ./configure --prefix=/tools
 make -j $PARALLEL_JOBS
 make install
 cd $LFS/sources
-rm -rf texinfo-6.6
+rm -rf texinfo-6.7
 
 echo "# 5.34. Xz-5.2.4"
 tar -Jxf xz-5.2.4.tar.xz

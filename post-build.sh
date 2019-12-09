@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# PiLFS Build Script SVN-20190902 v1.0
+# PiLFS Build Script SVN-20191205 v1.0
 # Performs post-build installs starting from chapter 6.80. Cleaning Up
 # https://intestinate.com/pilfs
 #
@@ -27,32 +27,32 @@ function prebuild_sanity_check {
 
 function check_tarballs {
 LIST_OF_TARBALLS="
+blfs-bootscripts-20191204.tar.xz
 which-2.21.tar.gz
 rng-tools_2-unofficial-mt.14.orig.tar.bz2
 pcre-8.43.tar.bz2
 wget-1.20.3.tar.gz
 make-ca-0.8.tar.gz
 libevent-2.1.11-stable.tar.gz
-tmux-2.9a.tar.gz
-openssh-8.0p1.tar.gz
+tmux-3.0a.tar.gz
+openssh-8.1p1.tar.gz
 joe-4.6.tar.gz
 master.tar.gz
 Mozilla-CA-20180117.tar.gz
 Net-SSLeay-1.88.tar.gz
 IO-Socket-SSL-2.066.tar.gz
 ntp-4.2.8p13.tar.gz
-blfs-bootscripts-20190902.tar.xz
-dhcpcd-8.0.3.tar.xz
+dhcpcd-8.1.2.tar.xz
 unzip60.tar.gz
-sqlite-autoconf-3290000.tar.gz
-curl-7.65.3.tar.xz
-git-2.23.0.tar.xz
-git-manpages-2.23.0.tar.xz
-libnl-3.4.0.tar.gz
+sqlite-autoconf-3300100.tar.gz
+curl-7.67.0.tar.xz
+git-2.24.0.tar.xz
+git-manpages-2.24.0.tar.xz
+libnl-3.5.0.tar.gz
 wpa_supplicant-2.9.tar.gz
-iw-5.3.tar.xz
-alsa-lib-1.1.9.tar.bz2
-alsa-utils-1.1.9.tar.bz2
+iw-5.4.tar.xz
+alsa-lib-1.2.1.2.tar.bz2
+alsa-utils-1.2.1.tar.bz2
 1BOfJ
 "
 
@@ -103,19 +103,19 @@ rm -f /usr/lib/libfl.a
 rm -f /usr/lib/libz.a
 find /usr/lib /usr/libexec -name \*.la -delete
 
-echo "# 7.2. LFS-Bootscripts-20190902"
-tar -Jxf lfs-bootscripts-20190902.tar.xz
-cd lfs-bootscripts-20190902
+echo "# 7.2. LFS-Bootscripts-20191031"
+tar -Jxf lfs-bootscripts-20191031.tar.xz
+cd lfs-bootscripts-20191031
 make install
 cd /sources
-rm -rf lfs-bootscripts-20190902
+rm -rf lfs-bootscripts-20191031
 
 echo "# 7.2.X PiLFS-bootscripts-20190902"
 tar -Jxf pilfs-bootscripts-20190902.tar.xz
 cd pilfs-bootscripts-20190902
 make install-everything
 cat > /etc/fake-hwclock.data << "EOF"
-2019-09-02 00:00:00
+2019-12-05 00:00:00
 EOF
 cd /sources
 rm -rf pilfs-bootscripts-20190902
@@ -370,10 +370,10 @@ devtmpfs       /dev         devtmpfs mode=0755,nosuid            0     0
 EOF
 
 echo "# 9.1. The End"
-echo SVN-20190902 > /etc/lfs-release
+echo SVN-20191205 > /etc/lfs-release
 cat > /etc/lsb-release << "EOF"
 DISTRIB_ID="PiLFS"
-DISTRIB_RELEASE="SVN-20190902"
+DISTRIB_RELEASE="SVN-20191205"
 DISTRIB_CODENAME="Mogwai"
 DISTRIB_DESCRIPTION="https://intestinate.com/pilfs"
 EOF
@@ -448,18 +448,18 @@ make install
 cd /usr/src
 rm -rf libevent-2.1.11-stable
 
-echo "# tmux-2.9a"
-tar -zxf tmux-2.9a.tar.gz
-cd tmux-2.9a
+echo "# tmux-3.0a"
+tar -zxf tmux-3.0a.tar.gz
+cd tmux-3.0a
 ./configure --prefix=/usr --sysconfdir=/etc --disable-static
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf tmux-2.9a
+rm -rf tmux-3.0a
 
-echo "# OpenSSH-8.0p1"
-tar -zxf openssh-8.0p1.tar.gz
-cd openssh-8.0p1
+echo "# OpenSSH-8.1p1"
+tar -zxf openssh-8.1p1.tar.gz
+cd openssh-8.1p1
 install  -v -m700 -d /var/lib/sshd
 chown    -v root:sys /var/lib/sshd
 groupadd -g 50 sshd
@@ -479,7 +479,7 @@ install -v -m644 contrib/ssh-copy-id.1 /usr/share/man/man1
 rm -vf /etc/ssh/ssh_host*
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 cd /usr/src
-rm -rf openssh-8.0p1
+rm -rf openssh-8.1p1
 
 echo "# JOE-4.6"
 tar -zxf joe-4.6.tar.gz
@@ -578,9 +578,9 @@ EOF
 cd /usr/src
 rm -rf ntp-4.2.8p13
 
-echo "# dhcpcd-8.0.3"
-tar -Jxf dhcpcd-8.0.3.tar.xz
-cd dhcpcd-8.0.3
+echo "# dhcpcd-8.1.2"
+tar -Jxf dhcpcd-8.1.2.tar.xz
+cd dhcpcd-8.1.2
 ./configure --libexecdir=/lib/dhcpcd \
             --dbdir=/var/lib/dhcpcd
 make -j $PARALLEL_JOBS
@@ -594,7 +594,7 @@ DHCP_STOP="-k"
 EOF
 cp -v /etc/sysconfig/ifconfig.eth0 /etc/sysconfig/dhcp.eth0
 cd /usr/src
-rm -rf dhcpcd-8.0.3
+rm -rf dhcpcd-8.1.2
 
 echo "# UnZip-6.0"
 tar -zxf unzip60.tar.gz
@@ -604,9 +604,9 @@ make prefix=/usr MANDIR=/usr/share/man/man1 -f unix/Makefile install
 cd /usr/src
 rm -rf unzip60
 
-echo "# SQLite-3.29.0"
-tar -zxf sqlite-autoconf-3290000.tar.gz
-cd sqlite-autoconf-3290000
+echo "# SQLite-3.30.1"
+tar -zxf sqlite-autoconf-3300100.tar.gz
+cd sqlite-autoconf-3300100
 ./configure --prefix=/usr     \
             --disable-static  \
             --enable-fts5     \
@@ -621,11 +621,11 @@ cd sqlite-autoconf-3290000
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf sqlite-autoconf-3290000
+rm -rf sqlite-autoconf-3300100
 
-echo "# cURL-7.65.3"
-tar -Jxf curl-7.65.3.tar.xz
-cd curl-7.65.3
+echo "# cURL-7.67.0"
+tar -Jxf curl-7.67.0.tar.xz
+cd curl-7.67.0
 ./configure --prefix=/usr                           \
             --disable-static                        \
             --enable-threaded-resolver              \
@@ -633,28 +633,28 @@ cd curl-7.65.3
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf curl-7.65.3
+rm -rf curl-7.67.0
 
-echo "# Git-2.23.0"
-tar -Jxf git-2.23.0.tar.xz
-cd git-2.23.0
+echo "# Git-2.24.0"
+tar -Jxf git-2.24.0.tar.xz
+cd git-2.24.0
 ./configure --prefix=/usr --with-gitconfig=/etc/gitconfig --sysconfdir=/etc --with-libpcre
 make -j $PARALLEL_JOBS
 make install
-tar -xf ../git-manpages-2.23.0.tar.xz -C /usr/share/man --no-same-owner --no-overwrite-dir
+tar -xf ../git-manpages-2.24.0.tar.xz -C /usr/share/man --no-same-owner --no-overwrite-dir
 cd /usr/src
-rm -rf git-2.23.0
+rm -rf git-2.24.0
 
-echo "# libnl-3.4.0"
-tar -zxf libnl-3.4.0.tar.gz
-cd libnl-3.4.0
+echo "# libnl-3.5.0"
+tar -zxf libnl-3.5.0.tar.gz
+cd libnl-3.5.0
 ./configure --prefix=/usr     \
             --sysconfdir=/etc \
             --disable-static
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf libnl-3.4.0
+rm -rf libnl-3.5.0
 
 echo "# wpa_supplicant-2.9"
 tar -zxf wpa_supplicant-2.9.tar.gz
@@ -706,27 +706,27 @@ EOF
 cd /usr/src
 rm -rf wpa_supplicant-2.9
 
-echo "# iw-5.3"
-tar -Jxf iw-5.3.tar.xz
-cd iw-5.3
+echo "# iw-5.4"
+tar -Jxf iw-5.4.tar.xz
+cd iw-5.4
 sed -i "/INSTALL.*gz/s/.gz//" Makefile
 make -j $PARALLEL_JOBS
 make SBINDIR=/sbin install
 cd /usr/src
-rm -rf iw-5.3
+rm -rf iw-5.4
 
-echo "# alsa-lib-1.1.9"
-tar -jxf alsa-lib-1.1.9.tar.bz2
-cd alsa-lib-1.1.9
+echo "# alsa-lib-1.2.1.2"
+tar -jxf alsa-lib-1.2.1.2.tar.bz2
+cd alsa-lib-1.2.1.2
 ./configure
 make -j $PARALLEL_JOBS
 make install
 cd /usr/src
-rm -rf alsa-lib-1.1.9
+rm -rf alsa-lib-1.2.1.2
 
-echo "# alsa-utils-1.1.9"
-tar -jxf alsa-utils-1.1.9.tar.bz2
-cd alsa-utils-1.1.9
+echo "# alsa-utils-1.2.1"
+tar -jxf alsa-utils-1.2.1.tar.bz2
+cd alsa-utils-1.2.1
 ./configure --disable-alsaconf \
             --disable-bat   \
             --disable-xmlto \
@@ -736,7 +736,7 @@ make install
 /usr/bin/amixer sset 'PCM' 0dB
 /usr/sbin/alsactl -L store
 cd /usr/src
-rm -rf alsa-utils-1.1.9
+rm -rf alsa-utils-1.2.1
 
 echo "# rpi-update"
 mv 1BOfJ rpi-update
@@ -746,11 +746,11 @@ echo "# pip3 update"
 pip3 install --upgrade pip
 
 echo "# BLFS Boot Scripts"
-tar -Jxf blfs-bootscripts-20190902.tar.xz
-cd blfs-bootscripts-20190902
+tar -Jxf blfs-bootscripts-20191204.tar.xz
+cd blfs-bootscripts-20191204
 make install-ntpd install-service-dhcpcd install-service-wpa
 cd /usr/src
-rm -rf blfs-bootscripts-20190902
+rm -rf blfs-bootscripts-20191204
 
 echo "# Cleaning up"
 ls -1 > /tmp/installed_tarballs.txt
