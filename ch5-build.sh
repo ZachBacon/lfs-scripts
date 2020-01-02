@@ -26,8 +26,8 @@ function prebuild_sanity_check {
         exit 1
     fi
 
-    if ! [[ -v LFS_TGT ]] || [[ $LFS_TGT != "armv6l-lfs-linux-gnueabihf" && $LFS_TGT != "armv7l-lfs-linux-gnueabihf" ]] ; then
-        echo "Your LFS_TGT variable should be set to armv6l-lfs-linux-gnueabihf for RPi1 or armv7l-lfs-linux-gnueabihf for RPi2 and up"
+    if ! [[ -v LFS_TGT ]] || [[ $LFS_TGT != "i686-lfs-linux-gnu" && $LFS_TGT != "x86_64-lfs-linux-gnu" ]] ; then
+        echo "Your LFS_TGT variable should be set to i686-lfs-linux-gnu for 32bit or x86_64-lfs-linux-gnu for 64bit"
         exit 1
     fi
 
@@ -61,14 +61,10 @@ function check_tarballs {
 LIST_OF_TARBALLS="
 binutils-2.33.1.tar.xz
 gcc-9.2.0.tar.xz
-gcc-9.1.0-rpi1-cpu-default.patch
-gcc-9.1.0-rpi2-cpu-default.patch
-gcc-9.1.0-rpi3-cpu-default.patch
-gcc-9.1.0-rpi4-cpu-default.patch
 mpfr-4.0.2.tar.xz
 gmp-6.1.2.tar.xz
 mpc-1.1.0.tar.gz
-rpi-4.19.y.tar.gz
+linux-5.4.7.tar.xz
 glibc-2.30.tar.xz
 tcl8.6.10-src.tar.gz
 expect5.45.4.tar.gz
@@ -187,7 +183,7 @@ tar -Jxf ../gmp-6.1.2.tar.xz
 mv -v gmp-6.1.2 gmp
 tar -zxf ../mpc-1.1.0.tar.gz
 mv -v mpc-1.1.0 mpc
-for file in gcc/config/arm/linux-eabi.h
+for file in gcc/config/{linux,i386/linux{,64}}.h
 do
   cp -uv $file{,.orig}
   sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' \
@@ -199,6 +195,14 @@ do
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
+
+case $(uname -m) in
+  x86_64)
+    sed -e '/m64=/s/lib64/lib/' \
+        -i.orig gcc/config/i386/t-linux64
+ ;;
+esac
+
 mkdir -v build
 cd build
 ../configure                                       \
@@ -227,9 +231,9 @@ make install
 cd $LFS/sources
 rm -rf gcc-9.2.0
 
-echo "# 5.6. Raspberry Pi Linux API Headers"
-tar -zxf rpi-4.19.y.tar.gz
-cd linux-rpi-4.19.y
+echo "# 5.6. Linux API Headers"
+tar -zxf linux-5.4.7.tar.xz
+cd linux-5.4.7
 make mrproper
 make INSTALL_HDR_PATH=dest headers_install
 cp -rv dest/include/* /tools/include
